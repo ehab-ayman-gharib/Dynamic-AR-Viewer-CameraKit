@@ -1,0 +1,30 @@
+{
+  "name": "dynamic-ar-viewer",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "pages:build": "npx opennextjs-cloudflare build",
+    "pages:deploy": "npm run pages:build && wrangler pages deploy .open-next/assets",
+    "pages:dev": "wrangler pages dev .open-next/assets --remote"
+  },
+  "dependencies": {
+    "next": "16.1.6",
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260207.0",
+    "@opennextjs/cloudflare": "^1.16.3",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.1.6",
+    "typescript": "^5",
+    "wrangler": "^4.63.0"
+  }
+}
