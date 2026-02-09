@@ -12,11 +12,19 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
     try {
         const { env } = await getCloudflareContext();
+
+        // Debug: Check if bucket binding exists
+        if (!env.MODELS_BUCKET) {
+            return new NextResponse('R2 bucket binding not found', { status: 500 });
+        }
+
         const r2Key = `3d-models/${key}`;
+        console.log(`Fetching R2 object: ${r2Key}`);
+
         const object = await env.MODELS_BUCKET.get(r2Key);
 
         if (!object) {
-            return new NextResponse('Model not found', { status: 404 });
+            return new NextResponse(`Model not found: ${r2Key}`, { status: 404 });
         }
 
         const headers = new Headers();
