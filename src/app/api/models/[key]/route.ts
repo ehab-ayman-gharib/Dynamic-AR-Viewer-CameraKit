@@ -1,7 +1,7 @@
 import { getCloudflareContext } from '@opennextjs/cloudflare';
 import { NextRequest, NextResponse } from 'next/server';
 
-export const runtime = 'edge';
+
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ key: string }> }) {
     const { key } = await params;
@@ -11,20 +11,27 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     }
 
     try {
-        const { env } = await getCloudflareContext();
+        const cf = await getCloudflareContext();
+        const env = cf.env;
 
         // Debug: Check if bucket binding exists
-        if (!env.MODELS_BUCKET) {
-            return new NextResponse('R2 bucket binding not found', { status: 500 });
+        if (!env || !env.MODELS_BUCKET) {
+            return NextResponse.json({
+                error: 'R2 bucket binding not found',
+                envKeys: Object.keys(env || {}),
+                hasEnv: !!env
+            }, { status: 500 });
         }
 
         const r2Key = `3d-models/${key}`;
-        console.log(`Fetching R2 object: ${r2Key}`);
-
         const object = await env.MODELS_BUCKET.get(r2Key);
 
         if (!object) {
-            return new NextResponse(`Model not found: ${r2Key}`, { status: 404 });
+            return NextResponse.json({
+                error: 'Model not found in R2',
+                requestedKey: r2Key,
+                bucketName: 'armodelviewer'
+            }, { status: 404 });
         }
 
         const headers = new Headers();
@@ -36,6 +43,10 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
             headers,
         });
     } catch (e: any) {
-        return new NextResponse(e.message || 'Error fetching model', { status: 500 });
+        return NextResponse.json({
+            error: 'Exception fetching model',
+            message: e.message,
+            stack: e.stack
+        }, { status: 500 });
     }
 }

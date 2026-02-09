@@ -7,9 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "pages:build": "npx opennextjs-cloudflare build",
-    "pages:deploy": "npm run pages:build && wrangler pages deploy .open-next/assets",
-    "pages:dev": "wrangler pages dev .open-next/assets --remote"
+    "pages:build": "npx opennextjs-cloudflare build && mv .open-next/worker.js .open-next/_worker.js",
+    "pages:deploy": "npm run pages:build && wrangler pages deploy .open-next",
+    "pages:dev": "wrangler pages dev .open-next --remote"
   },
   "dependencies": {
     "next": "16.1.6",
