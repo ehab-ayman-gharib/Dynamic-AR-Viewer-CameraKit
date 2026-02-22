@@ -39,6 +39,10 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         headers.set('etag', object.httpEtag);
         headers.set('content-type', 'model/gltf-binary');
 
+        // CORS Headers
+        headers.set('Access-Control-Allow-Origin', '*');
+        headers.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
+
         return new NextResponse(object.body, {
             headers,
         });
@@ -49,4 +53,15 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
             stack: e.stack
         }, { status: 500 });
     }
+}
+
+export async function OPTIONS() {
+    return new NextResponse(null, {
+        status: 204,
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        },
+    });
 }

@@ -7,12 +7,14 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "pages:build": "npx opennextjs-cloudflare build && mv .open-next/worker.js .open-next/_worker.js",
-    "pages:deploy": "npm run pages:build && wrangler pages deploy .open-next",
-    "pages:dev": "wrangler pages dev .open-next --remote"
+    "pages:build": "opennextjs-cloudflare build",
+    "pages:deploy": "npm run pages:build && wrangler deploy",
+    "pages:dev": "opennextjs-cloudflare build && opennextjs-cloudflare preview"
   },
   "dependencies": {
+    "lucide-react": "^0.575.0",
     "next": "16.1.6",
+    "qrcode.react": "^4.2.0",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },

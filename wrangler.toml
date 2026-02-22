@@ -1,8 +1,11 @@
 name = "dynamic-ar-viewer"
+main = ".open-next/worker.js"
 compatibility_date = "2026-02-04"
 compatibility_flags = ["nodejs_compat", "global_fetch_strictly_public"]
-# OpenNext output directory
-pages_build_output_dir = ".open-next" 
+
+[assets]
+directory = ".open-next/assets"
+binding = "ASSETS"
 
 [[r2_buckets]]
 binding = "MODELS_BUCKET"
