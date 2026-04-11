@@ -12,52 +12,39 @@ This guide provides a step-by-step process for building and deploying a Next.js 
 - **Cloudflare R2**: S3-compatible object storage.
 - **@opennextjs/cloudflare**: The adapter that makes Next.js work seamlessly on Cloudflare Workers.
 - **Ubuntu/WSL**: Mandatory for building OpenNext projects on Windows.
-
 ---
-
 ## 🚀 Setup Steps
-
 ### 1. Environment Preparation (Windows Users)
 OpenNext requires a Unix-like environment for bundling. If you are on Windows, you **must** use WSL (Windows Subsystem for Linux).
 - Install WSL: `wsl --install`
 - Open your terminal in WSL: `wsl -d Ubuntu`
-
 ### 2. Install Dependencies
 Run these commands inside your project root (in WSL):
 ```bash
 npm install @opennextjs/cloudflare@latest
 npm install --save-dev wrangler@latest
 ```
-
 ### 3. Configure Cloudflare (`wrangler.toml`)
 Create a `wrangler.toml` in your root directory. This binds your R2 bucket to your code.
-
 ```toml
 name = "your-project-name"
 compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat", "global_fetch_strictly_public"]
 pages_build_output_dir = ".open-next"
-
 [[r2_buckets]]
 binding = "MODELS_BUCKET" # This is the variable name in your code
 bucket_name = "your-r2-bucket-name"
 ```
-
 ### 4. Configure Next.js (`next.config.ts`)
 Enable Cloudflare integration for local development:
-
 ```typescript
 import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
-
 initOpenNextCloudflareForDev();
-
 const nextConfig = {
   /* your config */
 };
-
 export default nextConfig;
 ```
-
 ### 5. Create the API Route
 Create `src/app/api/models/[key]/route.ts`. 
 

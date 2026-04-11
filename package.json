@@ -7,9 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "pages:build": "opennextjs-cloudflare build",
-    "pages:deploy": "npm run pages:build && wrangler deploy",
-    "pages:dev": "opennextjs-cloudflare build && opennextjs-cloudflare preview"
+    "worker:build": "opennextjs-cloudflare build",
+    "worker:deploy": "npm run worker:build && wrangler deploy",
+    "worker:dev": "opennextjs-cloudflare build && opennextjs-cloudflare preview"
   },
   "dependencies": {
     "lucide-react": "^0.575.0",
