@@ -1,8 +1,10 @@
 'use client';
 
-import { CheckCircle2, Copy, ExternalLink } from 'lucide-react';
+import { CheckCircle2, Copy, ExternalLink, RefreshCw } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
+
 
 interface UploadSuccessProps {
     modelId: string;
@@ -11,9 +13,15 @@ interface UploadSuccessProps {
 
 export function UploadSuccess({ modelId, onReset }: UploadSuccessProps) {
     const [copied, setCopied] = useState(false);
+    const [modelUrl, setModelUrl] = useState<string>('');
 
     // URL to the external AR Viewer app
     const viewerUrl = `https://camera-kit-test.vercel.app/?modelId=${modelId}`;
+
+    useEffect(() => {
+      // The API serves the model at /api/models/${key}
+      setModelUrl(`/api/models/${modelId}.glb`);
+    }, [modelId]);
 
     const handleCopy = async () => {
         try {
@@ -26,67 +34,97 @@ export function UploadSuccess({ modelId, onReset }: UploadSuccessProps) {
     };
 
     return (
-        <div className="w-full max-w-md p-8 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl flex flex-col items-center animate-in fade-in zoom-in duration-300">
-            <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mb-6">
-                <CheckCircle2 className="w-8 h-8 text-green-400" />
-            </div>
-
-            <h2 className="text-2xl font-bold text-white mb-2">Upload Successful!</h2>
-            <p className="text-white/60 text-center mb-8">
-                Your 3D model is ready. Scan the QR code or share the link below to view it in AR.
-            </p>
-
-            <div className="bg-white p-4 rounded-xl mb-8 shadow-inner">
-                <QRCodeSVG
-                    value={viewerUrl}
-                    size={200}
-                    bgColor={"#ffffff"}
-                    fgColor={"#000000"}
-                    level={"L"}
-                    includeMargin={false}
-                />
-            </div>
-
-            <div className="w-full space-y-4">
-                <div className="relative">
-                    <input
-                        type="text"
-                        readOnly
-                        value={viewerUrl}
-                        className="w-full bg-black/40 border border-white/10 rounded-lg py-3 px-4 text-white text-sm pr-12 focus:outline-none focus:border-white/20"
-                    />
-                    <button
-                        onClick={handleCopy}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 p-2 hover:bg-white/10 rounded-md transition-colors text-white/70 hover:text-white"
-                        title="Copy to clipboard"
-                    >
-                        <Copy className="w-4 h-4" />
-                    </button>
+        <div className="w-full bg-white/80 backdrop-blur-2xl border border-white rounded-[2rem] shadow-[0_8px_40px_rgb(0,0,0,0.06)] overflow-hidden animate-in fade-in zoom-in-95 duration-500">
+            <div className="flex flex-col lg:flex-row">
+                
+                {/* Left Side: 3D Model Viewer */}
+                <div className="w-full lg:w-3/5 bg-slate-100/50 border-b lg:border-b-0 lg:border-r border-slate-200/60 p-6 flex flex-col min-h-[400px] lg:min-h-[500px] relative group">
+                    <div className="absolute top-6 left-6 z-10 flex items-center gap-2 bg-white/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-slate-200 shadow-sm text-xs font-semibold text-slate-700">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                      Live Preview
+                    </div>
+                    {modelUrl && (
+                        <div className="flex-1 w-full relative rounded-2xl overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200/50 shadow-inner">
+                            <model-viewer
+                                src={modelUrl}
+                                auto-rotate
+                                camera-controls
+                                shadow-intensity="1"
+                                environment-image="neutral"
+                                exposure="1"
+                                className="w-full h-full absolute inset-0"
+                                style={{ width: '100%', height: '100%' }}
+                            ></model-viewer>
+                        </div>
+                    )}
                 </div>
 
-                {copied && (
-                    <p className="text-green-400 text-xs text-center font-medium animate-in fade-in slide-in-from-top-2">
-                        Copied to clipboard!
+                {/* Right Side: Info & Actions */}
+                <div className="w-full lg:w-2/5 p-8 lg:p-10 flex flex-col items-center justify-center bg-white/40">
+                    <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mb-6 shadow-sm border border-emerald-200">
+                        <CheckCircle2 className="w-8 h-8 text-emerald-600" />
+                    </div>
+
+                    <h2 className="text-3xl font-extrabold text-slate-800 mb-3 text-center">Upload Complete!</h2>
+                    <p className="text-slate-500 text-center mb-8 font-medium">
+                        Your 3D model is ready. Scan the QR code or share the link to view it in AR.
                     </p>
-                )}
 
-                <div className="flex gap-3">
-                    <a
-                        href={viewerUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex-1 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-medium py-3 rounded-lg transition-colors"
-                    >
-                        <ExternalLink className="w-4 h-4" />
-                        Open Viewer
-                    </a>
-                    <button
-                        onClick={onReset}
-                        className="flex-1 flex items-center justify-center bg-white/10 hover:bg-white/20 text-white font-medium py-3 rounded-lg transition-colors"
-                    >
-                        Upload Another
-                    </button>
+                    <div className="bg-white p-5 rounded-2xl mb-8 shadow-[0_4px_20px_rgb(0,0,0,0.05)] border border-slate-100 transform hover:scale-105 transition-transform duration-300">
+                        <QRCodeSVG
+                            value={viewerUrl}
+                            size={180}
+                            bgColor={"#ffffff"}
+                            fgColor={"#0f172a"}
+                            level={"H"}
+                            includeMargin={false}
+                        />
+                    </div>
+
+                    <div className="w-full space-y-5">
+                        <div className="relative group">
+                            <input
+                                type="text"
+                                readOnly
+                                value={viewerUrl}
+                                className="w-full bg-white border border-slate-300 rounded-xl py-3.5 px-4 text-slate-700 text-sm font-medium pr-14 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all shadow-sm group-hover:border-slate-400"
+                            />
+                            <button
+                                onClick={handleCopy}
+                                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 hover:bg-blue-50 rounded-lg transition-colors text-slate-400 hover:text-blue-600"
+                                title="Copy to clipboard"
+                            >
+                                <Copy className="w-5 h-5" />
+                            </button>
+                        </div>
+
+                        {copied && (
+                            <p className="text-emerald-600 text-sm text-center font-bold animate-in fade-in slide-in-from-top-2">
+                                Link copied to clipboard!
+                            </p>
+                        )}
+
+                        <div className="flex flex-col gap-3">
+                            <a
+                                href={viewerUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="w-full flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3.5 rounded-xl transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+                            >
+                                <ExternalLink className="w-5 h-5" />
+                                Launch WebAR Viewer
+                            </a>
+                            <button
+                                onClick={onReset}
+                                className="w-full flex items-center justify-center gap-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-semibold py-3.5 rounded-xl transition-all shadow-sm hover:shadow-md"
+                            >
+                                <RefreshCw className="w-4 h-4" />
+                                Upload Another Model
+                            </button>
+                        </div>
+                    </div>
                 </div>
+                
             </div>
         </div>
     );

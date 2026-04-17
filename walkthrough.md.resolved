@@ -1,0 +1,59 @@
+# Walkthrough — Dynamic AR CDN Upload Portal ✅
+
+**Live URL:** `https://dynamic-ar-viewer.ehab-ayman-gh.workers.dev/`
+
+## What Was Built
+
+A full-stack **WebAR Upload Portal** deployed to Cloudflare Workers that allows users to:
+1. Drag & drop a `.glb` 3D model file
+2. Upload it securely to **Cloudflare R2** storage
+3. Receive a sharable URL + QR code pointing to the external CameraKit AR viewer
+
+## Architecture
+
+```
+User Browser
+    ↓ upload .glb
+Cloudflare Worker (Next.js via OpenNext)
+    ↓ store with unique ID
+Cloudflare R2 Bucket (armodelviewer)
+    ↓ generated link
+https://camera-kit-test.vercel.app/?modelId={id}
+    ↓ downloads model + launches AR
+CameraKit Web SDK (Vercel)
+```
+
+## Key Files
+
+| File | Purpose |
+|---|---|
+| [wrangler.toml](file:///d:/Work/Projects/2026/Dynamic-AR-Viewer-CameraKit/wrangler.toml) | Worker config with R2 + `[assets]` binding |
+| [src/app/page.tsx](file:///d:/Work/Projects/2026/Dynamic-AR-Viewer-CameraKit/src/app/page.tsx) | Drag & drop upload UI |
+| [src/app/api/upload/route.ts](file:///d:/Work/Projects/2026/Dynamic-AR-Viewer-CameraKit/src/app/api/upload/route.ts) | `POST /api/upload` — stores `.glb` in R2 |
+| [src/app/api/models/[key]/route.ts](file:///d:/Work/Projects/2026/Dynamic-AR-Viewer-CameraKit/src/app/api/models) | `GET /api/models/{key}` — serves model from R2 |
+| [src/components/UploadSuccess.tsx](file:///d:/Work/Projects/2026/Dynamic-AR-Viewer-CameraKit/src/components/UploadSuccess.tsx) | Success screen with QR code + copy link |
+
+## Deployment
+
+> [!IMPORTANT]
+> Must run inside **WSL** (not Windows PowerShell directly) due to OpenNext build tooling requirements.
+
+```bash
+# Full build + deploy to Cloudflare Workers
+npm run pages:deploy
+# Equivalent to:
+# opennextjs-cloudflare build && wrangler deploy
+```
+
+[wrangler.toml](file:///d:/Work/Projects/2026/Dynamic-AR-Viewer-CameraKit/wrangler.toml) uses `main = ".open-next/worker.js"` and `[assets] directory = ".open-next/assets"` — this is the correct structure for Cloudflare Workers (not Pages).
+
+## Verified End-to-End ✅
+
+- Upload `.glb` via drag & drop ✅
+- File appears in Cloudflare R2 under `3d-models/{id}.glb` ✅
+- QR code and shareable URL generated ✅
+- URL points to `camera-kit-test.vercel.app/?modelId={id}` ✅
+
+## Key Lesson — Workers vs. Pages
+
+`@opennextjs/cloudflare` deploys to **Cloudflare Workers**, NOT Cloudflare Pages, even though the config uses `opennextjs-cloudflare build`. The correct deploy command is `wrangler deploy` (not `wrangler pages deploy`). Using `wrangler pages deploy` breaks static asset routing, causing 404s for all CSS/JS.

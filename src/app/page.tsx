@@ -31,7 +31,6 @@ export default function Home() {
       return;
     }
 
-    // Optional: add size limit (e.g., 50MB)
     if (selectedFile.size > 50 * 1024 * 1024) {
       setError('File size must be under 50MB.');
       setFile(null);
@@ -89,19 +88,25 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-slate-950 text-white font-sans flex flex-col items-center justify-center p-4 selection:bg-blue-500/30">
-      {/* Background Decor */}
+    <main className="min-h-screen bg-slate-50 text-slate-900 font-sans flex flex-col items-center justify-center p-4 selection:bg-blue-200 overflow-hidden relative">
+      {/* Background Decor Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-600/20 blur-[120px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-indigo-600/20 blur-[120px]" />
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-300/40 blur-[120px] mix-blend-multiply" />
+        <div className="absolute top-[20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-fuchsia-300/30 blur-[120px] mix-blend-multiply" />
+        <div className="absolute bottom-[-10%] left-[20%] w-[40%] h-[40%] rounded-full bg-cyan-300/30 blur-[120px] mix-blend-multiply" />
       </div>
 
-      <div className="z-10 flex flex-col items-center w-full max-w-2xl">
-        <div className="mb-12 text-center">
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
+      <div className="z-10 flex flex-col items-center w-full max-w-5xl">
+        <div className="mb-10 text-center relative">
+          <div className="inline-block mb-3 px-4 py-1.5 rounded-full bg-white/60 border border-white shadow-sm backdrop-blur-md">
+            <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent text-sm font-semibold tracking-wide uppercase">
+              Immersive Assets
+            </span>
+          </div>
+          <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6 text-slate-800 leading-tight">
             Dynamic AR CDN
           </h1>
-          <p className="text-lg text-slate-400 max-w-lg mx-auto">
+          <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto font-medium">
             Upload your 3D models securely and instantly generate a WebAR experience powered by CameraKit.
           </p>
         </div>
@@ -112,19 +117,19 @@ export default function Home() {
             onReset={() => setSuccessModelId(null)}
           />
         ) : (
-          <div className="w-full bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-2xl transition-all">
+          <div className="w-full max-w-2xl bg-white/70 backdrop-blur-2xl border border-white rounded-[2rem] p-8 md:p-12 shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all">
 
             <div
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
               onClick={() => fileInputRef.current?.click()}
-              className={`relative border-2 border-dashed rounded-xl p-12 text-center cursor-pointer transition-all duration-300 ease-out flex flex-col items-center justify-center min-h-[300px] group
+              className={`relative border-2 border-dashed rounded-2xl p-12 text-center cursor-pointer transition-all duration-300 ease-out flex flex-col items-center justify-center min-h-[300px] group
                 ${isHovering
-                  ? 'border-blue-500 bg-blue-500/10'
+                  ? 'border-blue-500 bg-blue-50'
                   : file
-                    ? 'border-green-500/50 bg-green-500/5'
-                    : 'border-white/20 bg-black/20 hover:border-white/40 hover:bg-white/5'
+                    ? 'border-emerald-500/50 bg-emerald-50/50'
+                    : 'border-slate-300 bg-slate-50/50 hover:border-blue-400 hover:bg-white/60'
                 }`}
             >
               <input
@@ -137,32 +142,32 @@ export default function Home() {
 
               {file ? (
                 <div className="animate-in zoom-in-95 duration-200 flex flex-col items-center">
-                  <div className="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center mb-4">
-                    <FileBox className="w-8 h-8 text-green-400" />
+                  <div className="w-20 h-20 rounded-full bg-emerald-100 flex items-center justify-center mb-5 shadow-sm border border-emerald-200">
+                    <FileBox className="w-10 h-10 text-emerald-600" />
                   </div>
-                  <p className="text-xl font-medium text-white mb-2">{file.name}</p>
-                  <p className="text-sm text-slate-400">{(file.size / (1024 * 1024)).toFixed(2)} MB</p>
-                  <p className="text-xs text-blue-400 mt-6 group-hover:underline">Click or drag to replace</p>
+                  <p className="text-2xl font-semibold text-slate-800 mb-2">{file.name}</p>
+                  <p className="text-sm text-slate-500 font-medium">{(file.size / (1024 * 1024)).toFixed(2)} MB</p>
+                  <p className="text-sm text-blue-600 mt-6 group-hover:underline font-medium">Click or drag to replace</p>
                 </div>
               ) : (
                 <div className="flex flex-col items-center">
-                  <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                    <Upload className="w-8 h-8 text-blue-400" />
+                  <div className="w-20 h-20 rounded-full bg-white shadow-sm border border-slate-200 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:shadow-md transition-all duration-300">
+                    <Upload className="w-10 h-10 text-blue-500" />
                   </div>
-                  <p className="text-xl font-medium text-white mb-2">
+                  <p className="text-2xl font-semibold text-slate-700 mb-3">
                     Drag & Drop your model
                   </p>
-                  <p className="text-sm text-slate-400">
-                    We exclusively support <strong className="text-white/80">.glb</strong> files
+                  <p className="text-base text-slate-500">
+                    We exclusively support <strong className="text-slate-800 bg-slate-200 px-2 py-0.5 rounded-md">.glb</strong> files
                   </p>
                 </div>
               )}
             </div>
 
             {error && (
-              <div className="mt-6 p-4 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center gap-3 text-red-400 animate-in slide-in-from-top-2">
+              <div className="mt-6 p-4 rounded-xl bg-red-50 border border-red-200 flex items-center gap-3 text-red-600 animate-in slide-in-from-top-2 shadow-sm">
                 <FileWarning className="w-5 h-5 flex-shrink-0" />
-                <p className="text-sm font-medium">{error}</p>
+                <p className="text-sm font-semibold">{error}</p>
               </div>
             )}
 
@@ -170,19 +175,19 @@ export default function Home() {
               <button
                 onClick={handleUpload}
                 disabled={!file || isUploading}
-                className={`py-3 px-8 rounded-xl font-bold flex items-center gap-2 transition-all duration-200
+                className={`py-3.5 px-8 rounded-xl font-bold flex items-center gap-2 transition-all duration-300
                   ${!file || isUploading
-                    ? 'bg-white/10 text-white/40 cursor-not-allowed'
-                    : 'bg-blue-600 hover:bg-blue-500 text-white shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:shadow-[0_0_25px_rgba(37,99,235,0.6)] hover:-translate-y-0.5'
+                    ? 'bg-slate-200 text-slate-400 cursor-not-allowed hidden'
+                    : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 hover:-translate-y-1'
                   }`}
               >
                 {isUploading ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    Uploading...
+                    Uploading Model...
                   </>
                 ) : (
-                  'Generate AR Link'
+                  'Upload & Generate AR Link'
                 )}
               </button>
             </div>
@@ -190,7 +195,7 @@ export default function Home() {
         )}
       </div>
 
-      <footer className="z-10 mt-16 text-center text-sm text-slate-500">
+      <footer className="z-10 mt-16 text-center text-sm font-medium text-slate-500 bg-white/40 px-6 py-2 rounded-full backdrop-blur-md border border-white/50 shadow-sm">
         <p>Enterprise WebAR Network • Zero App Downloads Required</p>
       </footer>
     </main>

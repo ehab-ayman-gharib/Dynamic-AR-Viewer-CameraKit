@@ -1,0 +1,42 @@
+# Implementation Plan - Dynamic WebAR Upload Portal
+
+## Current Status
+- Backend R2 Proxy (GET API) implemented and verified on Cloudflare Pages.
+- CORS properly configured for cross-origin requests from Vercel.
+- **Pending**: Implementing the Upload Portal (Frontend + POST API).
+
+## 🚀 Stage 2: WebAR Upload Portal Implementation
+
+We will turn this project into a CMS/Upload Portal. Users will upload models here, and we will generate a link to an external, independently hosted AR view application (`camera-kit-test.vercel.app`).
+
+### Dependencies to Add
+- `lucide-react` (Icons for UI)
+- `qrcode.react` (For generating QR codes from the URL)
+- (Optional) [uuid](file:///d:/Work/Projects/2026/Dynamic-AR-Viewer-CameraKit/.open-next/server-functions/default/handler.mjs#275-276) or similar for ID generation.
+
+### [API Routes]
+#### [NEW] [src/app/api/upload/route.ts](file:///d:/Work/Projects/2026/Dynamic-AR-Viewer-CameraKit/src/app/api/upload/route.ts)
+- [POST](file:///d:/Work/Projects/2026/Dynamic-AR-Viewer-CameraKit/.open-next/server-functions/default/handler.mjs#3-4) request handler.
+- Accepts `FormData` containing the `.glb` file.
+- Generates a unique, URL-safe ID.
+- Uploads the file to the `MODELS_BUCKET` using the path `3d-models/{id}.glb`.
+- Returns a JSON response with the generated [id](file:///d:/Work/Projects/2026/Dynamic-AR-Viewer-CameraKit/.open-next/server-functions/default/handler.mjs#139-140).
+
+### [Frontend Components & Pages]
+#### [MODIFY] [src/app/page.tsx](file:///d:/Work/Projects/2026/Dynamic-AR-Viewer-CameraKit/src/app/page.tsx)
+- Implementation of a sleek, modern Landing Page.
+- Features a Drag & Drop area for `.glb` files.
+- Includes a form for optional metadata (like Name).
+- Handles the upload flow (Loading state, Success state).
+
+#### [NEW] [src/components/UploadSuccess.tsx](file:///d:/Work/Projects/2026/Dynamic-AR-Viewer-CameraKit/src/components/UploadSuccess.tsx)
+- Renders after a successful upload.
+- Displays the generated shareable URL: `https://camera-kit-test.vercel.app/?modelId={id}` (or similar based on Vercel app's routing structure).
+- Displays a generated QR code linking directly to the AR viewer.
+- "Copy Link" functionality.
+
+## Verification Plan
+- **Upload Test**: Attempt to upload a valid `.glb` file through the local dev server.
+- **R2 Verification**: Check the Cloudflare Dashboard to ensure the file appeared in the `armodelviewer` bucket under the generated ID.
+- **Link Verification**: Ensure the generated URL correctly points to the Vercel app with the new ID.
+- **Deployment Test**: Deploy to Cloudflare Pages and perform an end-to-end upload and view cycle.
