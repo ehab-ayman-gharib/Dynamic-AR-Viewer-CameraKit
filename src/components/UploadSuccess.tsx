@@ -15,12 +15,12 @@ export function UploadSuccess({ modelId, onReset }: UploadSuccessProps) {
     const [copied, setCopied] = useState(false);
     const [modelUrl, setModelUrl] = useState<string>('');
 
-    // URL to the external AR Viewer app
-    const viewerUrl = `https://camera-kit-test.vercel.app/?modelID=${modelId}`;
+    const [viewerUrl, setViewerUrl] = useState<string>('');
 
     useEffect(() => {
         // The API serves the model at /api/models/${key}
         setModelUrl(`/api/models/${modelId}.glb`);
+        setViewerUrl(`${window.location.origin}/viewer?modelID=${modelId}`);
     }, [modelId]);
 
     const handleCopy = async () => {
@@ -72,7 +72,7 @@ export function UploadSuccess({ modelId, onReset }: UploadSuccessProps) {
 
                     <div className="bg-white p-5 rounded-2xl mb-8 shadow-[0_4px_20px_rgb(0,0,0,0.05)] border border-slate-100 transform hover:scale-105 transition-transform duration-300">
                         <QRCodeSVG
-                            value={viewerUrl}
+                            value={viewerUrl || "https://dynamic-ar-viewer.app"}
                             size={180}
                             bgColor={"#ffffff"}
                             fgColor={"#0f172a"}

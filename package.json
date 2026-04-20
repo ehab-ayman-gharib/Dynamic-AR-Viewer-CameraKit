@@ -12,6 +12,7 @@
     "worker:dev": "opennextjs-cloudflare build && opennextjs-cloudflare preview"
   },
   "dependencies": {
+    "@snap/camera-kit": "^1.16.0",
     "lucide-react": "^0.575.0",
     "next": "16.1.6",
     "qrcode.react": "^4.2.0",
