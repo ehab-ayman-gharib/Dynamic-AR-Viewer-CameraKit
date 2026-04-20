@@ -16,11 +16,11 @@ export function UploadSuccess({ modelId, onReset }: UploadSuccessProps) {
     const [modelUrl, setModelUrl] = useState<string>('');
 
     // URL to the external AR Viewer app
-    const viewerUrl = `https://camera-kit-test.vercel.app/?modelId=${modelId}`;
+    const viewerUrl = `https://camera-kit-test.vercel.app/?modelID=${modelId}`;
 
     useEffect(() => {
-      // The API serves the model at /api/models/${key}
-      setModelUrl(`/api/models/${modelId}.glb`);
+        // The API serves the model at /api/models/${key}
+        setModelUrl(`/api/models/${modelId}.glb`);
     }, [modelId]);
 
     const handleCopy = async () => {
@@ -36,12 +36,12 @@ export function UploadSuccess({ modelId, onReset }: UploadSuccessProps) {
     return (
         <div className="w-full bg-white/80 backdrop-blur-2xl border border-white rounded-[2rem] shadow-[0_8px_40px_rgb(0,0,0,0.06)] overflow-hidden animate-in fade-in zoom-in-95 duration-500">
             <div className="flex flex-col lg:flex-row">
-                
+
                 {/* Left Side: 3D Model Viewer */}
                 <div className="w-full lg:w-3/5 bg-slate-100/50 border-b lg:border-b-0 lg:border-r border-slate-200/60 p-6 flex flex-col min-h-[400px] lg:min-h-[500px] relative group">
                     <div className="absolute top-6 left-6 z-10 flex items-center gap-2 bg-white/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-slate-200 shadow-sm text-xs font-semibold text-slate-700">
-                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                      Live Preview
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                        Live Preview
                     </div>
                     {modelUrl && (
                         <div className="flex-1 w-full relative rounded-2xl overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200/50 shadow-inner">
@@ -124,7 +124,7 @@ export function UploadSuccess({ modelId, onReset }: UploadSuccessProps) {
                         </div>
                     </div>
                 </div>
-                
+
             </div>
         </div>
     );

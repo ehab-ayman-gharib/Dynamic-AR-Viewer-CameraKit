@@ -1,5 +1,5 @@
 ---
-description: How to deploy a Next.js application to Cloudflare Pages with R2 Bucket integration using OpenNext.
+description: How to deploy a Next.js application to Cloudflare Workers with R2 Bucket integration using OpenNext.
 ---
 
 # Next.js + Cloudflare R2 Deployment Workflow
@@ -8,7 +8,7 @@ This guide provides a step-by-step process for building and deploying a Next.js 
 
 ## 🛠 Technology Stack
 - **Next.js 15+**: Modern React framework.
-- **Cloudflare Pages**: High-performance hosting.
+- **Cloudflare Workers**: High-performance edge computing.
 - **Cloudflare R2**: S3-compatible object storage.
 - **@opennextjs/cloudflare**: The adapter that makes Next.js work seamlessly on Cloudflare Workers.
 - **Ubuntu/WSL**: Mandatory for building OpenNext projects on Windows.
@@ -17,7 +17,7 @@ This guide provides a step-by-step process for building and deploying a Next.js 
 ### 1. Environment Preparation (Windows Users)
 OpenNext requires a Unix-like environment for bundling. If you are on Windows, you **must** use WSL (Windows Subsystem for Linux).
 - Install WSL: `wsl --install`
-- Open your terminal in WSL: `wsl -d Ubuntu`
+- Open your terminal in WSL: `wsl` or `wsl -d Ubuntu`
 ### 2. Install Dependencies
 Run these commands inside your project root (in WSL):
 ```bash
@@ -29,8 +29,12 @@ Create a `wrangler.toml` in your root directory. This binds your R2 bucket to yo
 ```toml
 name = "your-project-name"
 compatibility_date = "2024-09-23"
-compatibility_flags = ["nodejs_compat", "global_fetch_strictly_public"]
-pages_build_output_dir = ".open-next"
+compatibility_flags = ["nodejs_compat"]
+
+# For Workers deployment, configure the main entry point and assets
+main = ".open-next/worker.js"
+assets = { directory = ".open-next/assets", binding = "ASSETS" }
+
 [[r2_buckets]]
 binding = "MODELS_BUCKET" # This is the variable name in your code
 bucket_name = "your-r2-bucket-name"
@@ -72,21 +76,36 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 ```
 
 ### 6. Update `package.json` Scripts
-Add these specialized scripts to handle the OpenNext build process:
+Add these specialized scripts to handle the OpenNext build process for Workers:
 
 ```json
 "scripts": {
-  "pages:build": "npx opennextjs-cloudflare build && mv .open-next/worker.js .open-next/_worker.js",
-  "pages:deploy": "npm run pages:build && wrangler pages deploy .open-next",
-  "pages:dev": "wrangler pages dev .open-next --remote"
+  "worker:build": "opennextjs-cloudflare build",
+  "worker:deploy": "npm run worker:build && wrangler deploy",
+  "worker:dev": "opennextjs-cloudflare build && opennextjs-cloudflare preview"
 }
 ```
-*Note: We rename `worker.js` to `_worker.js` because Cloudflare Pages looks for the underscore prefix.*
 
 ### 7. Build and Deploy
+You have two options for deploying. Since you are on Windows, you must use WSL to ensure OpenNext builds the path references correctly.
+
+**Option 1: Quick deployment from PowerShell/CMD**
+You can execute the entire sequence through WSL without leaving PowerShell.
 // turbo
 ```bash
-wsl -d Ubuntu --exec npm run pages:deploy
+wsl npm run worker:deploy
+```
+*(If you have multiple WSL distributions and want to be specific, use `wsl -d Ubuntu --exec npm run worker:deploy`)*
+
+**Option 2: Enter WSL first (Recommended)**
+If you are actively working on the project, enter your Linux environment first.
+1. Enter WSL shell:
+```bash
+wsl
+```
+2. Once inside the Linux shell, run the deploy script:
+```bash
+npm run worker:deploy
 ```
 
 ---
@@ -101,7 +120,7 @@ The build tool (`opennextjs-cloudflare`) uses specific file-system features and 
 
 ### 🔄 Local vs Remote
 - Use `npm run dev` for standard React/Next.js UI work.
-- Use `npm run pages:dev` if you need to test your R2 bindings against the real Cloudflare environment.
+- Use `npm run worker:dev` if you need to test your backend or R2 integrations.
 
 ### 📂 Directory Structure
-Cloudflare Pages expects its assets and the worker script in a specific folder. We use `.open-next` as the output directory to ensure everything (static files + server logic) is included in the deployment.
+Cloudflare Workers deploys differently than Pages. OpenNext generates a `.open-next/` directory that contains a `worker.js` file (which runs your server logic) and an `assets/` folder (for static files). Our `worker:deploy` command automatically ensures `wrangler` uploads these correct outputs to Cloudflare Workers.
